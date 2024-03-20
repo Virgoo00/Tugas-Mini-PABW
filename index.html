@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tugas PABW</title>
+<style>
+    /* CSS styling */
+    body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    #product-list {
+        background-color: #f5f5f5;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    #product-list div {
+        margin-bottom: 5px;
+    }
+
+    #product-form {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    #product-form input,
+    #product-form button {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        margin-right: 10px;
+    }
+
+    #product-form button {
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+    }
+    table {
+    width: 100%;
+    border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+
+
+    #search-form {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    }
+
+    #searchInput {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    flex: 1; 
+    margin-right: 10px;
+    }
+
+    #search-form button {
+    padding: 10px 15px; 
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background-color: #f1f1f1;
+    cursor: pointer;
+    }
+
+    /* CSS styling */
+    @media only screen and (max-width: 600px) {
+    /* Style adjustments for smaller screens */
+    #product-form input,
+    #product-form button {
+        width: 100%; /* Make inputs and buttons full width */
+        margin-right: 0; /* Remove right margin */
+        margin-bottom: 10px; /* Add bottom margin for spacing */
+    }
+    
+    #search-form input,
+    #search-form button {
+        width: calc(50% - 5px); /* Make inputs and buttons half width with margin */
+        margin-right: 5px; /* Add right margin for spacing */
+    }
+
+    #product-list {
+        overflow-x: auto; /* Add horizontal scroll for small screens */
+    }
+
+    table {
+        min-width: 100%; /* Ensure table doesn't shrink below viewport */
+    }
+    }
+
+</style>
+</head>
+<body>
+
+    <h1>Tugas Mini PABW</h1>
+    <form id="search-form">
+        <input type="text" id="searchInput" placeholder="Search by product name">
+        <button type="button" onclick="searchProduct()">Search</button>
+        <button type="button" onclick="resetSearch()">Reset</button>
+    </form>
+    <div>
+        <label for="dataCount">Show:</label>
+        <select id="dataCount" onchange="changeDataCount()">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
+    </div>
+    <div id="product-list">
+        <table>
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Category</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <form id="product-form">
+        <input type="number" id="productCode" placeholder="Code" required>
+        <input type="text" id="productName" placeholder="Product Name" required>
+        <input type="number" id="productPrice" placeholder="Price" required>
+        <input type="number" id="productStock" placeholder="Stock" required>
+        <input type="text" id="productCategory" placeholder="Category" required>
+        <button type="submit">Add Product</button>
+    </form>
+    
+
+    <script>
+        // JavaScript logic
+        let products = [];
+
+        function displayProducts(productsToShow = products) {
+            const productList = document.getElementById("product-list").querySelector("tbody");
+            productList.innerHTML = ""; // Clear existing content
+
+            productsToShow.forEach((product, index) => {
+                const productRow = document.createElement("tr");
+                productRow.innerHTML = `
+                    <td>${product.code}</td>
+                    <td>${product.name}</td>
+                    <td>Rp ${product.price}.000</td>
+                    <td>${product.stock}</td>
+                    <td>${product.category}</td>
+                    <td>
+                        <button onclick="editProduct(${index})">Edit</button>
+                        <button onclick="deleteProduct(${index})">Delete</button>
+                    </td>
+                `;
+                productList.appendChild(productRow);
+            });
+        }
+        function changeDataCount() {
+            const dataCount = document.getElementById("dataCount").value;
+            // Memanggil ulang fungsi displayProducts dengan data terbaru
+            displayProducts(products.slice(0, dataCount));
+        }
+        
+        function addProduct(code, name, price, stock, category) {
+            products.push({ code, name, price, stock, category });
+            displayProducts();
+        }
+
+        function editProduct(index) {
+            const product = products[index];
+            product.code = prompt("Enter new code:", product.code);
+            product.name = prompt("Enter new name:", product.name);
+            product.price = prompt("Enter new price:", product.price);
+            product.stock = prompt("Enter new stock:", product.stock);
+            product.category = prompt("Enter new category:", product.category);
+            displayProducts();
+        }
+
+        function deleteProduct(index) {
+            products.splice(index, 1);
+            displayProducts();
+        }
+
+        document.getElementById("product-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const productCode = document.getElementById("productCode").value;
+            const productName = document.getElementById("productName").value;
+            const productPrice = document.getElementById("productPrice").value;
+            const productStock = document.getElementById("productStock").value;
+            const productCategory = document.getElementById("productCategory").value;
+            addProduct(productCode, productName, productPrice, productStock, productCategory);
+            document.getElementById("productCode").value = "";
+            document.getElementById("productName").value = "";
+            document.getElementById("productPrice").value = "";
+            document.getElementById("productStock").value = "";
+            document.getElementById("productCategory").value = "";
+        });
+
+        function searchProduct() {
+            const searchInput = document.getElementById("searchInput").value.toLowerCase();
+            const filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchInput));
+            displayProducts(filteredProducts);
+        }
+
+        function resetSearch() {
+            document.getElementById("searchInput").value = ""; // Mengosongkan kotak pencarian
+            displayProducts(products); // Menampilkan kembali semua produk
+        }
+
+        function loadCSV() {
+            fetch('DATA_PENJUALAN.csv')
+                .then(response => response.text())
+                .then(data => {
+                    const rows = data.split('\n');
+                    rows.forEach(row => {x
+                        // const columns = row.split(',');
+                        const code = row[0];
+                        const name = row[1];
+                        const price = parseInt(row[2]);
+                        const stock = parseInt(row[3]);
+                        const category = row[4];
+                        addProduct(code, name, price, stock, category);
+                    });
+                    displayProducts();
+                });
+        }
+
+        // Sample initial data
+
+
+        // Load CSV data
+        loadCSV();
+        
+    </script>
+    <script src="2\database.js"></script>
+
+</body>
+</html>
