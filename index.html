@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tugas PABW</title>
 <style>
-    /* CSS styling */
-    body {
+/*------------------------------------ CSS styling ------------------------------------*/
+body {
     font-family: sans-serif;
     margin: 0;
     padding: 20px;
@@ -46,49 +46,49 @@
         border-radius: 3px;
         margin-right: 10px;
     }
-
+    
     #product-form button {
         background-color: #4CAF50;
         color: white;
         cursor: pointer;
     }
     table {
-    width: 100%;
-    border-collapse: collapse;
+        width: 100%;
+        border-collapse: collapse;
     }
-
+    
     th,
     td {
         padding: 10px;
         border: 1px solid #ddd;
         text-align: left;
     }
-
-
+    
+    
     #search-form {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
     }
-
+    
     #searchInput {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 3px;
-    flex: 1; 
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        flex: 1; 
     margin-right: 10px;
-    }
+}
 
-    #search-form button {
+#search-form button {
     padding: 10px 15px; 
     border: 1px solid #ddd;
     border-radius: 3px;
     background-color: #f1f1f1;
     cursor: pointer;
-    }
+}
 
-    /* CSS styling */
-    @media only screen and (max-width: 600px) {
+
+@media only screen and (max-width: 600px) {
     /* Style adjustments for smaller screens */
     #product-form input,
     #product-form button {
@@ -102,26 +102,47 @@
         width: calc(50% - 5px); /* Make inputs and buttons half width with margin */
         margin-right: 5px; /* Add right margin for spacing */
     }
-
+    
     #product-list {
         overflow-x: auto; /* Add horizontal scroll for small screens */
     }
-
+    
     table {
         min-width: 100%; /* Ensure table doesn't shrink below viewport */
     }
-    }
-
+}
+/*------------------------------------ CSS styling ------------------------------------*/
 </style>
+
 </head>
 <body>
 
     <h1>Tugas Mini PABW</h1>
+    <div id="cart">
+        <h2>Cart</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="cart-items">
+                <!-- Produk yang dimasukkan ke keranjang akan ditampilkan di sini -->
+            </tbody>
+        </table>
+        <div id="total-price">Total: Rp 0.000</div>
+    </div>
+    
+    <br>
     <form id="search-form">
         <input type="text" id="searchInput" placeholder="Search by product name">
         <button type="button" onclick="searchProduct()">Search</button>
         <button type="button" onclick="resetSearch()">Reset</button>
     </form>
+
     <div>
         <label for="dataCount">Show:</label>
         <select id="dataCount" onchange="changeDataCount()">
@@ -131,6 +152,7 @@
             <option value="100">100</option>
         </select>
     </div>
+
     <div id="product-list">
         <table>
             <thead>
@@ -147,6 +169,7 @@
             </tbody>
         </table>
     </div>
+
     <form id="product-form">
         <input type="number" id="productCode" placeholder="Code" required>
         <input type="text" id="productName" placeholder="Product Name" required>
@@ -155,16 +178,73 @@
         <input type="text" id="productCategory" placeholder="Category" required>
         <button type="submit">Add Product</button>
     </form>
-    
+<!------------------------------------ HTML CODE ------------------------------------>
+
 
     <script>
-        // JavaScript logic
+        
+        //Variable inti
         let products = [];
+        let cart = [];
+        
+        function addProduct(code, name, price, stock, category) { // FUngsi untuk menambah produk menampilkan produk
+            products.push({ code, name, price, stock, category });
+            displayProducts();
+        }
 
-        function displayProducts(productsToShow = products) {
+        function addToCart(index) { // Menambahkan produk ke keranjang belanja
+            const product = products[index];
+            cart.push(product); // Menambahkan produk ke dalam array keranjang belanja
+            displayCart(); // Memperbarui tampilan keranjang belanja
+            updateTotal(); // Memperbarui total harga
+            console.log("Product added to cart:", product);
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1); // Hapus item dari array keranjang belanja berdasarkan index
+            displayCart(); // Memperbarui tampilan keranjang belanja
+            updateTotal(); // Memperbarui total harga
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+    // Tempatkan semua kode JavaScript Anda di sini
+});
+
+        function displayCart() { // Menampilkan keranjang belanja
+            const cartItemsElement = document.getElementById('cart-items');
+            cartItemsElement.innerHTML = '';
+            cart.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.code}</td>
+                    <td>${item.name}</td>
+                    <td>Rp ${item.price}.000</td>
+                    <td><button onclick="removeFromCart(${index})">Remove</button></td>
+                `;
+                cartItemsElement.appendChild(row);
+            });
+        }
+
+        function addToCart(index) { // Menambahkan produk ke keranjang belanja
+            const product = products[index];
+            cart.push(product); // Menambahkan produk ke dalam array keranjang belanja
+            displayCart(); // Memperbarui tampilan keranjang belanja
+            updateTotal(); // Memperbarui total harga
+            console.log("Product added to cart:", product);
+        }
+
+        function updateTotal() { // Memperbarui total harga
+            let total = 0;
+            cart.forEach(item => {
+                total += item.price;
+            });
+            document.getElementById('total-price').textContent = `Total: Rp ${total}.000`;
+        }
+
+
+        function displayProducts(productsToShow = products) {  // Fungsi untuk menampilkan product
             const productList = document.getElementById("product-list").querySelector("tbody");
             productList.innerHTML = ""; // Clear existing content
-
             productsToShow.forEach((product, index) => {
                 const productRow = document.createElement("tr");
                 productRow.innerHTML = `
@@ -176,23 +256,20 @@
                     <td>
                         <button onclick="editProduct(${index})">Edit</button>
                         <button onclick="deleteProduct(${index})">Delete</button>
+                        <button onclick="addToCart(${index})">Add to Cart</button>
                     </td>
                 `;
                 productList.appendChild(productRow);
             });
         }
-        function changeDataCount() {
+
+        function changeDataCount() { // Fungsi untuk menampilkan jumlah data yang diperlukan dan dihubungkan dengan for"dataCount"
             const dataCount = document.getElementById("dataCount").value;
             // Memanggil ulang fungsi displayProducts dengan data terbaru
             displayProducts(products.slice(0, dataCount));
         }
-        
-        function addProduct(code, name, price, stock, category) {
-            products.push({ code, name, price, stock, category });
-            displayProducts();
-        }
 
-        function editProduct(index) {
+        function editProduct(index) { // fungsi untuk mengedit data yang ada diproduct
             const product = products[index];
             product.code = prompt("Enter new code:", product.code);
             product.name = prompt("Enter new name:", product.name);
@@ -202,11 +279,22 @@
             displayProducts();
         }
 
-        function deleteProduct(index) {
+        function deleteProduct(index) { // menghapus data yang ada diproduct
             products.splice(index, 1);
             displayProducts();
         }
 
+        function searchProduct() {
+            const searchInput = document.getElementById("searchInput").value.toLowerCase();
+            const filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchInput));
+            displayProducts(filteredProducts);
+        }
+
+        function resetSearch() {
+            document.getElementById("searchInput").value = ""; // Mengosongkan kotak pencarian
+            displayProducts(products); // Menampilkan kembali semua produk
+        }
+    
         document.getElementById("product-form").addEventListener("submit", function(event) {
             event.preventDefault();
             const productCode = document.getElementById("productCode").value;
@@ -222,41 +310,6 @@
             document.getElementById("productCategory").value = "";
         });
 
-        function searchProduct() {
-            const searchInput = document.getElementById("searchInput").value.toLowerCase();
-            const filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchInput));
-            displayProducts(filteredProducts);
-        }
-
-        function resetSearch() {
-            document.getElementById("searchInput").value = ""; // Mengosongkan kotak pencarian
-            displayProducts(products); // Menampilkan kembali semua produk
-        }
-
-        function loadCSV() {
-            fetch('DATA_PENJUALAN.csv')
-                .then(response => response.text())
-                .then(data => {
-                    const rows = data.split('\n');
-                    rows.forEach(row => {x
-                        // const columns = row.split(',');
-                        const code = row[0];
-                        const name = row[1];
-                        const price = parseInt(row[2]);
-                        const stock = parseInt(row[3]);
-                        const category = row[4];
-                        addProduct(code, name, price, stock, category);
-                    });
-                    displayProducts();
-                });
-        }
-
-        // Sample initial data
-
-
-        // Load CSV data
-        loadCSV();
-        
     </script>
     <script src="2\database.js"></script>
 
