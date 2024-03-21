@@ -134,6 +134,7 @@ body {
             </tbody>
         </table>
         <div id="total-price">Total: Rp 0.000</div>
+        <button onclick="checkout()">Checkout</button> <!-- Tombol checkout -->
     </div>
     
     <br>
@@ -204,6 +205,20 @@ body {
             cart.splice(index, 1); // Hapus item dari array keranjang belanja berdasarkan index
             displayCart(); // Memperbarui tampilan keranjang belanja
             updateTotal(); // Memperbarui total harga
+        }
+
+        function checkout() {
+            cart.forEach(item => {
+                // Kurangi jumlah stok produk yang dibeli
+                const productIndex = products.findIndex(product => product.code === item.code);
+                if (productIndex !== -1) {
+                    products[productIndex].stock--;
+                }
+            });
+            cart = []; // Kosongkan keranjang belanja setelah checkout
+            displayCart(); // Memperbarui tampilan keranjang belanja
+            updateTotal(); // Memperbarui total harga
+            alert("Checkout successful!"); // Tampilkan pesan berhasil checkout
         }
 
         document.addEventListener("DOMContentLoaded", function() {
